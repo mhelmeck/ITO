@@ -2,14 +2,27 @@ clc;
 close all;
 clear all;
 
-neuron_1 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
-neuron_2 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
-neuron_3 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
-neuron_4 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
-neuron_5 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
-neuron_6 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
-neuron_7 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
-neuron_8 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
+% Set of neurons with initial weights
+% neuron_1 = struct('distanceWeight',600,'slopeWeight',90,'clarityWeight',200,'arrayOfLineIndex',[]);
+% neuron_2 = struct('distanceWeight',600,'slopeWeight',90,'clarityWeight',50,'arrayOfLineIndex',[]);
+% neuron_3 = struct('distanceWeight',600,'slopeWeight',0,'clarityWeight',200,'arrayOfLineIndex',[]);
+% neuron_4 = struct('distanceWeight',600,'slopeWeight',0,'clarityWeight',50,'arrayOfLineIndex',[]);
+% neuron_5 = struct('distanceWeight',100,'slopeWeight',90,'clarityWeight',200,'arrayOfLineIndex',[]);
+% neuron_6 = struct('distanceWeight',100,'slopeWeight',90,'clarityWeight',50,'arrayOfLineIndex',[]);
+% neuron_7 = struct('distanceWeight',100,'slopeWeight',0,'clarityWeight',200,'arrayOfLineIndex',[]);
+% neuron_8 = struct('distanceWeight',100,'slopeWeight',0,'clarityWeight',50,'arrayOfLineIndex',[]);
+%
+
+% Set of neurons with trained weights
+neuron_1 = struct('distanceWeight',753.0095,'slopeWeight',27.0478,'clarityWeight',60.8270,'arrayOfLineIndex',[]);
+neuron_2 = struct('distanceWeight',1238.4000,'slopeWeight',3.0956,'clarityWeight',79.7544,'arrayOfLineIndex',[]);
+neuron_3 = struct('distanceWeight',510.2378,'slopeWeight',17.1973,'clarityWeight',94.1391,'arrayOfLineIndex',[]);
+neuron_4 = struct('distanceWeight',105.1350,'slopeWeight',12.8365,'clarityWeight',149.7140,'arrayOfLineIndex',[]);
+neuron_5 = struct('distanceWeight',180.7742,'slopeWeight',17.5885,'clarityWeight',127.1814,'arrayOfLineIndex',[]);
+neuron_6 = struct('distanceWeight',42.1821,'slopeWeight',21.4817,'clarityWeight',126.6250,'arrayOfLineIndex',[]);
+neuron_7 = struct('distanceWeight',61.9464,'slopeWeight',10.6817,'clarityWeight',1.1892,'arrayOfLineIndex',[]);
+neuron_8 = struct('distanceWeight',306.3568,'slopeWeight',19.5020,'clarityWeight',34.9504,'arrayOfLineIndex',[]);
+%
 
 neurons = [neuron_1, neuron_2, neuron_3, neuron_4, neuron_5, neuron_6, neuron_7, neuron_8];
 
