@@ -2,76 +2,59 @@ clc;
 close all;
 clear all;
 
-neuron1 = struct('wagaNachylenia',90.0,'wagaDlugosci',900,'wagaOstrosci',200,'indexyCech',[]);
-neuron2 = struct('wagaNachylenia',0.0,'wagaDlugosci',900,'wagaOstrosci',200,'indexyCech',[]);
-neuron3 = struct('wagaNachylenia',90.0,'wagaDlugosci',300,'wagaOstrosci',200,'indexyCech',[]);
-neuron4 = struct('wagaNachylenia',0.0,'wagaDlugosci',300,'wagaOstrosci',200,'indexyCech',[]);
-neuron5 = struct('wagaNachylenia',90.0,'wagaDlugosci',300,'wagaOstrosci',90,'indexyCech',[]);
-neuron6 = struct('wagaNachylenia',0.0,'wagaDlugosci',300,'wagaOstrosci',90,'indexyCech',[]);
-neuron7 = struct('wagaNachylenia',90.0,'wagaDlugosci',900,'wagaOstrosci',90,'indexyCech',[]);
-neuron8 = struct('wagaNachylenia',0.0,'wagaDlugosci',900,'wagaOstrosci',90,'indexyCech',[]);
+neuron1 = struct('wagaNachylenia',51.0,'wagaDlugosci',460,'wagaOstrosci',70,'indexyCech',[]);
+neuron2 = struct('wagaNachylenia',52.0,'wagaDlugosci',470,'wagaOstrosci',80,'indexyCech',[]);
+neuron3 = struct('wagaNachylenia',53.0,'wagaDlugosci',480,'wagaOstrosci',90,'indexyCech',[]);
+neuron4 = struct('wagaNachylenia',54.0,'wagaDlugosci',500,'wagaOstrosci',100,'indexyCech',[]);
+neuron5 = struct('wagaNachylenia',55.0,'wagaDlugosci',510,'wagaOstrosci',110,'indexyCech',[]);
+neuron6 = struct('wagaNachylenia',56.0,'wagaDlugosci',520,'wagaOstrosci',120,'indexyCech',[]);
+neuron7 = struct('wagaNachylenia',57.0,'wagaDlugosci',530,'wagaOstrosci',130,'indexyCech',[]);
+neuron8 = struct('wagaNachylenia',58.0,'wagaDlugosci',540,'wagaOstrosci',140,'indexyCech',[]);
+% neuron1 = struct('wagaNachylenia',89.0,'wagaDlugosci',48,'wagaOstrosci',0.2,'indexyCech',[]);
+% neuron2 = struct('wagaNachylenia',19.0,'wagaDlugosci',39,'wagaOstrosci',0.1,'indexyCech',[]);
+% neuron3 = struct('wagaNachylenia',13.0,'wagaDlugosci',146,'wagaOstrosci',0.1,'indexyCech',[]);
+% neuron4 = struct('wagaNachylenia',19.0,'wagaDlugosci',552,'wagaOstrosci',0.08,'indexyCech',[]);
+% neuron5 = struct('wagaNachylenia',19.0,'wagaDlugosci',301,'wagaOstrosci',0.05,'indexyCech',[]);
+% neuron6 = struct('wagaNachylenia',33.0,'wagaDlugosci',874,'wagaOstrosci',0.07,'indexyCech',[]);
+% neuron7 = struct('wagaNachylenia',6.0,'wagaDlugosci',1394,'wagaOstrosci',0.08,'indexyCech',[]);
+% neuron8 = struct('wagaNachylenia',7.0,'wagaDlugosci',439,'wagaOstrosci',0.09,'indexyCech',[]);
 neurons = [neuron1, neuron2, neuron3, neuron4, neuron5, neuron6, neuron7, neuron8];
 
-% myImage_1 = get_bw_image('/Users/maciejhelmecki/Desktop/ITO_example_1.jpg');
-% myImage_2 = get_bw_image('/Users/maciejhelmecki/Desktop/ITO_example_2.jpg');
-% myImage_3 = get_bw_image('/Users/maciejhelmecki/Desktop/ITO_example_3.jpg');
-% myImage_4 = get_bw_image('/Users/maciejhelmecki/Desktop/ITO_example_4.jpg');
+% myFolder = '/Users/maciejhelmecki/Desktop/LearningSet';
+% if ~isdir(myFolder)
+%     errorMessage = sprintf('Error: The following folder does not exist:\n%s', myFolder);
+%     uiwait(warndlg(errorMessage));
+%     return;
+% end
+% filePattern = fullfile(myFolder, '*.jpg');
+% jpegFiles = dir(filePattern);
+% for k = 1:length(jpegFiles)
+%     baseFileName = jpegFiles(k).name;
+%     fullFileName = fullfile(myFolder, baseFileName);
+%     fprintf(1, 'Now reading %s\n', fullFileName);
+%  
+%     image = get_image(fullFileName);
+%     feature = get_features(image);
+%     result = ucz_siec(feature, neurons, false);
+%     neurons = result;
+% end
 
-% images = [myImage_1, myImage_2, myImage_3, myImage_4];
-% image = images(1);
-% % for i = 1:length(images)
-% %     image = images(i);
-% % %     test = get_features(image);
-% % end
-
-myFolder = '/Users/maciejhelmecki/Desktop/LearningSet';
-if ~isdir(myFolder)
-    errorMessage = sprintf('Error: The following folder does not exist:\n%s', myFolder);
-    uiwait(warndlg(errorMessage));
-    return;
-end
-filePattern = fullfile(myFolder, '*.jpg');
-jpegFiles = dir(filePattern);
-for k = 1:length(jpegFiles)
-    baseFileName = jpegFiles(k).name;
-    fullFileName = fullfile(myFolder, baseFileName);
-    fprintf(1, 'Now reading %s\n', fullFileName);
- 
-    image = get_bw_image(fullFileName);
-    feature = get_features(image);
-    test = ucz_siec(feature, neurons, false);
-    neurons = test;
-end
-
-% image2 = get_bw_image('/Users/maciejhelmecki/Desktop/ITO_example_4.jpg');
-% feature2 = get_features(image2);
-% test = ucz_siec(feature2, neurons, true);
-% neurons = test;
-
-% features_1 = get_features(myImage_1);
-% features_2 = get_features(myImage_2);
-% features_3 = get_features(myImage_3);
-% features_4 = get_features(myImage_4); 
-% 
-% test_1 = ucz_siec(features_1, neurons, false);
-% test_2 = ucz_siec(features_2, test_1, false);
-% test_3 = ucz_siec(features_3, test_2, false);
-% test_4 = ucz_siec(features_4, test_3, true);
+image = get_image('/Users/maciejhelmecki/Desktop/ITO_example_33.jpg');
+feature = get_features(image);
+result = ucz_siec(feature, neurons, true);
+neurons = result;
 
 % draw(myImageRGB_4)
 
 % MARK: - Functions
-function BW = get_bw_image(name) 
+function image = get_image(name) 
     myImageRGB = imread(name);
-    resizedMyImageRGB = imresize(myImageRGB,[1200, 1920]);
-    myImageGray = rgb2gray(resizedMyImageRGB);
-    
-    BW = edge(myImageGray,'prewitt', 0.11);
+    image = imresize(myImageRGB,[1200, 1920]);
 end
 
-function features = get_features(BW)
-%     myImageGray = rgb2gray(myImageRGB);
-%     BW = edge(myImageGray,'prewitt', 0.11);
+function features = get_features(myImageRGB)
+    myImageGray = rgb2gray(myImageRGB);
+    BW = edge(myImageGray,'prewitt', 0.11);
 
     [H,T,R] = hough(BW);
 
@@ -79,7 +62,7 @@ function features = get_features(BW)
     lines = houghlines(BW,T,R,P,'FillGap',30,'MinLength',10);
 
     for lineIndex = 1:length(lines)
-        temp(lineIndex) = get_feature(lines(lineIndex), BW); 
+        temp(lineIndex) = get_feature(lines(lineIndex), myImageGray); 
     end
     
     features = temp;
@@ -154,6 +137,7 @@ function averageGrayRate = get_average_gray_rate(x_start, y_start, x_end, y_end,
         end
     end
     summedPointsGrayRate = sum(pointsGrayRate);
+    disp(summedPointsGrayRate)
     averageGrayRate = summedPointsGrayRate / length(points_between);
 end
 
@@ -210,9 +194,9 @@ function points_between = get_points(x_start, y_start, x_end, y_end)
     end
 end
 
-function draw(BW)
-%     myImageGray = rgb2gray(myImageRGB);
-%     BW = edge(myImageGray,'prewitt', 0.11);
+function draw(myImageRGB)
+    myImageGray = rgb2gray(myImageRGB);
+    BW = edge(myImageGray,'prewitt', 0.11);
 
     [H,T,R] = hough(BW);
 
