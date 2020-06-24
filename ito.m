@@ -32,7 +32,7 @@ clear all;
 %     updatedNeurons = train_network(imageFeatures, neurons, false);
 %     neurons = updatedNeurons;
 % end
-%
+% 
 
 
 
@@ -55,12 +55,26 @@ neuron_8 = struct('distanceWeight',306.3568,'slopeWeight',19.5020,'clarityWeight
 
 neurons = [neuron_1, neuron_2, neuron_3, neuron_4, neuron_5, neuron_6, neuron_7, neuron_8];
 
-rgbImage = get_rgb_image('Examples/ITO_example_1.jpg');
+% MARK: - Example
+exampleFolder = 'CurrentExample';
+if ~isfolder(exampleFolder)
+    errorMessage = sprintf('Error: The following folder does not exist:\n%s', myFolder);
+    uiwait(warndlg(errorMessage));
+    return;
+end
+exampleFilePattern = fullfile(exampleFolder, '*.jpg');
+exampleJpegFiles = dir(exampleFilePattern);
+exampleFile = exampleJpegFiles(1);
+exampleBaseFileName = exampleFile.name;
+exampleFullFileName = fullfile(exampleFolder, exampleBaseFileName);
+ 
+rgbImage = get_rgb_image(exampleFullFileName);
 imageFeatures = get_features(rgbImage);
 updatedNeurons = train_network(imageFeatures, neurons, true);
 neurons = updatedNeurons;
 
 draw(rgbImage, neurons)
+% 
 
 % MARK: - Functions
 function image = get_rgb_image(name) 
