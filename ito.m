@@ -2,7 +2,7 @@ clc;
 close all;
 clear all;
 
-% Set of neurons with initial weights
+% MARK: - Set of neurons with initial weights
 % neuron_1 = struct('distanceWeight',600,'slopeWeight',90,'clarityWeight',200,'arrayOfLineIndex',[]);
 % neuron_2 = struct('distanceWeight',600,'slopeWeight',90,'clarityWeight',50,'arrayOfLineIndex',[]);
 % neuron_3 = struct('distanceWeight',600,'slopeWeight',0,'clarityWeight',200,'arrayOfLineIndex',[]);
@@ -13,20 +13,8 @@ clear all;
 % neuron_8 = struct('distanceWeight',100,'slopeWeight',0,'clarityWeight',50,'arrayOfLineIndex',[]);
 %
 
-% Set of neurons with trained weights
-neuron_1 = struct('distanceWeight',753.0095,'slopeWeight',27.0478,'clarityWeight',60.8270,'arrayOfLineIndex',[]);
-neuron_2 = struct('distanceWeight',1238.4000,'slopeWeight',3.0956,'clarityWeight',79.7544,'arrayOfLineIndex',[]);
-neuron_3 = struct('distanceWeight',510.2378,'slopeWeight',17.1973,'clarityWeight',94.1391,'arrayOfLineIndex',[]);
-neuron_4 = struct('distanceWeight',105.1350,'slopeWeight',12.8365,'clarityWeight',149.7140,'arrayOfLineIndex',[]);
-neuron_5 = struct('distanceWeight',180.7742,'slopeWeight',17.5885,'clarityWeight',127.1814,'arrayOfLineIndex',[]);
-neuron_6 = struct('distanceWeight',42.1821,'slopeWeight',21.4817,'clarityWeight',126.6250,'arrayOfLineIndex',[]);
-neuron_7 = struct('distanceWeight',61.9464,'slopeWeight',10.6817,'clarityWeight',1.1892,'arrayOfLineIndex',[]);
-neuron_8 = struct('distanceWeight',306.3568,'slopeWeight',19.5020,'clarityWeight',34.9504,'arrayOfLineIndex',[]);
-%
-
-neurons = [neuron_1, neuron_2, neuron_3, neuron_4, neuron_5, neuron_6, neuron_7, neuron_8];
-
-% folder = '/Users/maciejhelmecki/Desktop/LearningSet';
+% MARK: - Learning algorithm
+% folder = 'LearningSet';
 % if ~isfolder(folder)
 %     errorMessage = sprintf('Error: The following folder does not exist:\n%s', myFolder);
 %     uiwait(warndlg(errorMessage));
@@ -44,13 +32,35 @@ neurons = [neuron_1, neuron_2, neuron_3, neuron_4, neuron_5, neuron_6, neuron_7,
 %     updatedNeurons = train_network(imageFeatures, neurons, false);
 %     neurons = updatedNeurons;
 % end
+%
 
-% rgbImage = get_rgb_image('/Users/maciejhelmecki/Desktop/ITO_example_2.jpg');
-% imageFeatures = get_features(rgbImage);
-% updatedNeurons = train_network(imageFeatures, neurons, false);
-% neurons = updatedNeurons;
 
-% draw(rgbImage, neurons(1).arrayOfLineIndex)
+
+% MARK: - IMPORATNT!
+% The set below contains already trained neurons
+% So the example image works on the trained network
+% If you want to learn network from zero you need to comment provided below set 
+% and uncomment all the code above this message
+
+% MARK: - Set of neurons with trained weights
+neuron_1 = struct('distanceWeight',753.0095,'slopeWeight',27.0478,'clarityWeight',60.8270,'arrayOfLineIndex',[]);
+neuron_2 = struct('distanceWeight',1238.4000,'slopeWeight',3.0956,'clarityWeight',79.7544,'arrayOfLineIndex',[]);
+neuron_3 = struct('distanceWeight',510.2378,'slopeWeight',17.1973,'clarityWeight',94.1391,'arrayOfLineIndex',[]);
+neuron_4 = struct('distanceWeight',105.1350,'slopeWeight',12.8365,'clarityWeight',149.7140,'arrayOfLineIndex',[]);
+neuron_5 = struct('distanceWeight',180.7742,'slopeWeight',17.5885,'clarityWeight',127.1814,'arrayOfLineIndex',[]);
+neuron_6 = struct('distanceWeight',42.1821,'slopeWeight',21.4817,'clarityWeight',126.6250,'arrayOfLineIndex',[]);
+neuron_7 = struct('distanceWeight',61.9464,'slopeWeight',10.6817,'clarityWeight',1.1892,'arrayOfLineIndex',[]);
+neuron_8 = struct('distanceWeight',306.3568,'slopeWeight',19.5020,'clarityWeight',34.9504,'arrayOfLineIndex',[]);
+%
+
+neurons = [neuron_1, neuron_2, neuron_3, neuron_4, neuron_5, neuron_6, neuron_7, neuron_8];
+
+rgbImage = get_rgb_image('Examples/ITO_example_1.jpg');
+imageFeatures = get_features(rgbImage);
+updatedNeurons = train_network(imageFeatures, neurons, true);
+neurons = updatedNeurons;
+
+draw(rgbImage, neurons(8).arrayOfLineIndex)
 
 % MARK: - Functions
 function image = get_rgb_image(name) 
@@ -89,7 +99,7 @@ function feature = get_feature(line, image)
     feature = struct('startPoint',startPoint,'endPoint',endPoint,'distance',distance,'slope',slope,'clarity',clarity);
 end
 
-function updatedNeurons = train_network(features, neurons, zapamietajIndexyCech)
+function updatedNeurons = train_network(features, neurons, writeArrayOfLineIndex)
     mi = 0.3;
     for k = 1:length(features)
         feature = features(k);
@@ -99,9 +109,9 @@ function updatedNeurons = train_network(features, neurons, zapamietajIndexyCech)
         for i = 1:length(neurons)
             neuron = neurons(i);
 
-            euklidesLini = get_euklides_value(feature.slope, neuron.slopeWeight, feature.distance, neuron.distanceWeight, feature.clarity, neuron.clarityWeight);
-            if euklidesLini < minEuklides
-               minEuklides = euklidesLini;
+            euklidesForLine = get_euklides_value(feature.slope, neuron.slopeWeight, feature.distance, neuron.distanceWeight, feature.clarity, neuron.clarityWeight);
+            if euklidesForLine < minEuklides
+               minEuklides = euklidesForLine;
                wonNeuronIndex = i;
             end
         end
@@ -109,15 +119,15 @@ function updatedNeurons = train_network(features, neurons, zapamietajIndexyCech)
         temp = struct('distanceWeight',feature.distance - wonNeuron.distanceWeight,'slopeWeight',feature.slope - wonNeuron.slopeWeight,'clarityWeight',feature.clarity - wonNeuron.clarityWeight);
         miTemp = struct('distanceWeight',mi * temp.distanceWeight,'slopeWeight',mi * temp.slopeWeight,'clarityWeight',mi * temp.clarityWeight);
        
-        if zapamietajIndexyCech
-            test = wonNeuron.arrayOfLineIndex;
-            testLength = length(test);
-            test(testLength + 1) = k;
+        if writeArrayOfLineIndex
+            array = wonNeuron.arrayOfLineIndex;
+            testLength = length(array);
+            array(testLength + 1) = k;
         else 
-            test = [];
+            array = [];
         end
         
-        updatedNeuron = struct('distanceWeight',wonNeuron.distanceWeight + miTemp.distanceWeight,'slopeWeight',wonNeuron.slopeWeight + miTemp.slopeWeight,'clarityWeight',wonNeuron.clarityWeight + miTemp.clarityWeight,'arrayOfLineIndex',test);
+        updatedNeuron = struct('distanceWeight',wonNeuron.distanceWeight + miTemp.distanceWeight,'slopeWeight',wonNeuron.slopeWeight + miTemp.slopeWeight,'clarityWeight',wonNeuron.clarityWeight + miTemp.clarityWeight,'arrayOfLineIndex',array);
         neurons(wonNeuronIndex) = updatedNeuron;
                 
         updatedNeurons = neurons;
