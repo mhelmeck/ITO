@@ -13,24 +13,24 @@ neuron_8 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfL
 
 neurons = [neuron_1, neuron_2, neuron_3, neuron_4, neuron_5, neuron_6, neuron_7, neuron_8];
 
-folder = '/Users/maciejhelmecki/Desktop/LearningSet';
-if ~isfolder(folder)
-    errorMessage = sprintf('Error: The following folder does not exist:\n%s', myFolder);
-    uiwait(warndlg(errorMessage));
-    return;
-end
-filePattern = fullfile(folder, '*.jpg');
-jpegFiles = dir(filePattern);
-for index = 1:length(jpegFiles)
-    baseFileName = jpegFiles(index).name;
-    fullFileName = fullfile(folder, baseFileName);
-    fprintf(1, 'Now reading %s\n', fullFileName);
- 
-    rgbImage = get_rgb_image(fullFileName);
-    imageFeatures = get_features(rgbImage);
-    updatedNeurons = train_network(imageFeatures, neurons, false);
-    neurons = updatedNeurons;
-end
+% folder = '/Users/maciejhelmecki/Desktop/LearningSet';
+% if ~isfolder(folder)
+%     errorMessage = sprintf('Error: The following folder does not exist:\n%s', myFolder);
+%     uiwait(warndlg(errorMessage));
+%     return;
+% end
+% filePattern = fullfile(folder, '*.jpg');
+% jpegFiles = dir(filePattern);
+% for index = 1:length(jpegFiles)
+%     baseFileName = jpegFiles(index).name;
+%     fullFileName = fullfile(folder, baseFileName);
+%     fprintf(1, 'Now reading %s\n', fullFileName);
+%  
+%     rgbImage = get_rgb_image(fullFileName);
+%     imageFeatures = get_features(rgbImage);
+%     updatedNeurons = train_network(imageFeatures, neurons, false);
+%     neurons = updatedNeurons;
+% end
 
 rgbImage = get_rgb_image('/Users/maciejhelmecki/Desktop/ITO_example_24.jpg');
 imageFeatures = get_features(rgbImage);
@@ -96,9 +96,9 @@ function updatedNeurons = train_network(features, neurons, zapamietajIndexyCech)
     end
 end
 
-function euklides = get_euklides_value(nachylenie, wagaNachylenia, dlugosc, wagaDlugosci, ostrosc, wagaOstrosci)
-    sumaKwadratow = (nachylenie - wagaNachylenia)^2 + (dlugosc - wagaDlugosci)^2 + (ostrosc - wagaOstrosci)^2 ;
-    euklides = sqrt(sumaKwadratow);
+function euklides = get_euklides_value(slope, slopeWeight, distance, distanceWeight, clarity, clarityWeight)
+    sumOfSquares = (slope - slopeWeight)^2 + (distance - distanceWeight)^2 + (clarity - clarityWeight)^2 ;
+    euklides = sqrt(sumOfSquares);
 end
 
 function feature = get_feature(line, image)
@@ -122,18 +122,18 @@ function averageGrayRate = get_average_gray_rate(x_start, y_start, x_end, y_end,
     imageSize = size(image);
     width = imageSize(1);
     height = imageSize(2);
-    for i = 1:length(points_between)
-        point = points_between(i);
+    for index = 1:length(points_between)
+        point = points_between(index);
         if point.x < width && point.y < height
             pointGrayRate = image(point.x,point.y);
-            pointsGrayRate(i) = pointGrayRate;
+            pointsGrayRate(index) = pointGrayRate;
         end
     end
     summedPointsGrayRate = sum(pointsGrayRate);
     averageGrayRate = summedPointsGrayRate / length(points_between);
 end
 
-function points_between = get_points(x_start, y_start, x_end, y_end)
+function pointBetween = get_points(x_start, y_start, x_end, y_end)
     steep = abs(y_end - y_start) > abs(x_end - x_start);
     x_0 = x_start;
     y_0 = y_start;
@@ -172,10 +172,10 @@ function points_between = get_points(x_start, y_start, x_end, y_end)
         
         if steep
             point1 = struct('x',y,'y',x);
-            points_between(z) = point1;
+            pointBetween(z) = point1;
         else
             point2 = struct('x',x,'y',y);
-            points_between(z) = point2;
+            pointBetween(z) = point2;
         end
         
         error = error - difference_y;
@@ -217,37 +217,6 @@ function draw(myImageRGB, arrayOfLineIndex)
        len = norm(lines(k).point1 - lines(k).point2);
        if ( len > max_len)
           max_len = len;
-          xy_long = xy;
        end
     end
 end
-
-% MARK: - TEST
-% subplot(1,2,1);
-% imshow(BW);
-% title('BW');
-% 
-% imageSize = size(myImageGray)
-% width = imageSize(1)
-% height = imageSize(2)
-% for i = 1:width
-%     for j = 1:height
-%         A(i,j) = false;
-%     end
-% end
-% for k = 1:length(lines)
-%     line = lines(k);
-%     x_start = line.point1(1);
-%     y_start = line.point1(2);
-%     x_end = line.point2(1);
-%     y_end = line.point2(2);
-%     
-%     points = get_points(x_start, y_start, x_end, y_end);
-%     for i = 1:length(points)
-%         point = points(i);
-%         A(point.y,point.x) = true;
-%     end
-% end 
-% subplot(1,2,2);
-% imshow(A);
-% title('A');
