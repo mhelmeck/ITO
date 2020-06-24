@@ -32,12 +32,12 @@ neurons = [neuron_1, neuron_2, neuron_3, neuron_4, neuron_5, neuron_6, neuron_7,
 %     neurons = updatedNeurons;
 % end
 
-rgbImage = get_rgb_image('/Users/maciejhelmecki/Desktop/ITO_example_24.jpg');
-imageFeatures = get_features(rgbImage);
-updatedNeurons = train_network(imageFeatures, neurons, true);
-neurons = updatedNeurons;
+% rgbImage = get_rgb_image('/Users/maciejhelmecki/Desktop/ITO_example_2.jpg');
+% imageFeatures = get_features(rgbImage);
+% updatedNeurons = train_network(imageFeatures, neurons, false);
+% neurons = updatedNeurons;
 
-draw(rgbImage, neurons(2).arrayOfLineIndex)
+% draw(rgbImage, neurons(1).arrayOfLineIndex)
 
 % MARK: - Functions
 function image = get_rgb_image(name) 
@@ -55,10 +55,25 @@ function features = get_features(myImageRGB)
     lines = houghlines(BW,T,R,P,'FillGap',30,'MinLength',10);
 
     for lineIndex = 1:length(lines)
-        temp(lineIndex) = get_feature(lines(lineIndex), myImageGray); 
+        result(lineIndex) = get_feature(lines(lineIndex), myImageGray); 
     end
     
-    features = temp;
+    features = result;
+end
+
+function feature = get_feature(line, image)
+    x_start = line.point1(1);
+    y_start = line.point1(2);
+    x_end = line.point2(1);
+    y_end = line.point2(2);
+
+    startPoint = struct('x',x_start,'y',y_start);
+    endPoint = struct('x',x_end,'y',y_end);
+    slope = abs((atan2(y_end - y_start, x_end - x_start)) * 180 / pi);
+    distance = sqrt((x_end - x_start)^2 + (y_end - y_start)^2);
+    clarity = get_average_gray_rate(x_start, y_start, x_end, y_end, image);
+    
+    feature = struct('startPoint',startPoint,'endPoint',endPoint,'distance',distance,'slope',slope,'clarity',clarity);
 end
 
 function updatedNeurons = train_network(features, neurons, zapamietajIndexyCech)
@@ -99,21 +114,6 @@ end
 function euklides = get_euklides_value(slope, slopeWeight, distance, distanceWeight, clarity, clarityWeight)
     sumOfSquares = (slope - slopeWeight)^2 + (distance - distanceWeight)^2 + (clarity - clarityWeight)^2 ;
     euklides = sqrt(sumOfSquares);
-end
-
-function feature = get_feature(line, image)
-    x_start = line.point1(1);
-    y_start = line.point1(2);
-    x_end = line.point2(1);
-    y_end = line.point2(2);
-
-    startPoint = struct('x',x_start,'y',y_start);
-    endPoint = struct('x',x_end,'y',y_end);
-    slope = abs((atan2(y_end - y_start, x_end - x_start)) * 180 / pi);
-    distance = sqrt((x_end - x_start)^2 + (y_end - y_start)^2);
-    clarity = get_average_gray_rate(x_start, y_start, x_end, y_end, image);
-    
-    feature = struct('startPoint',startPoint,'endPoint',endPoint,'distance',distance,'slope',slope,'clarity',clarity);
 end
 
 function averageGrayRate = get_average_gray_rate(x_start, y_start, x_end, y_end, image)
@@ -194,29 +194,15 @@ function draw(myImageRGB, arrayOfLineIndex)
 
     P = houghpeaks(H,50,'threshold',ceil(0.1*max(H(:))));
     lines = houghlines(BW,T,R,P,'FillGap',30,'MinLength',10);
-    disp(length(lines))
     
     figure, imshow(BW), hold on
-    max_len = 0;
     for k = 1:length(lines)
         xy = [lines(k).point1; lines(k).point2];
         
-        
-        % Plot beginnings and ends of lines
         if ismember(k, arrayOfLineIndex)
-%             plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','red');
-%             plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
             plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','red');
         else
             plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','blue');
-%             plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','blue');
-%             plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','blue');
         end
-
-       % Determine the endpoints of the longest line segment
-       len = norm(lines(k).point1 - lines(k).point2);
-       if ( len > max_len)
-          max_len = len;
-       end
     end
 end
