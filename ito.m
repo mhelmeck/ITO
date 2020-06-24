@@ -2,27 +2,28 @@ clc;
 close all;
 clear all;
 
-neuron1 = struct('wagaNachylenia',51.0,'wagaDlugosci',460,'wagaOstrosci',70,'indexyCech',[]);
-neuron2 = struct('wagaNachylenia',52.0,'wagaDlugosci',470,'wagaOstrosci',80,'indexyCech',[]);
-neuron3 = struct('wagaNachylenia',53.0,'wagaDlugosci',480,'wagaOstrosci',90,'indexyCech',[]);
-neuron4 = struct('wagaNachylenia',54.0,'wagaDlugosci',500,'wagaOstrosci',100,'indexyCech',[]);
-neuron5 = struct('wagaNachylenia',55.0,'wagaDlugosci',510,'wagaOstrosci',110,'indexyCech',[]);
-neuron6 = struct('wagaNachylenia',56.0,'wagaDlugosci',520,'wagaOstrosci',120,'indexyCech',[]);
-neuron7 = struct('wagaNachylenia',57.0,'wagaDlugosci',530,'wagaOstrosci',130,'indexyCech',[]);
-neuron8 = struct('wagaNachylenia',58.0,'wagaDlugosci',540,'wagaOstrosci',140,'indexyCech',[]);
-neurons = [neuron1, neuron2, neuron3, neuron4, neuron5, neuron6, neuron7, neuron8];
+neuron_1 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
+neuron_2 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
+neuron_3 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
+neuron_4 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
+neuron_5 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
+neuron_6 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
+neuron_7 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
+neuron_8 = struct('distanceWeight',0,'slopeWeight',0,'clarityWeight',0,'arrayOfLineIndex',[]);
 
-myFolder = '/Users/maciejhelmecki/Desktop/LearningSet';
-if ~isfolder(myFolder)
+neurons = [neuron_1, neuron_2, neuron_3, neuron_4, neuron_5, neuron_6, neuron_7, neuron_8];
+
+folder = '/Users/maciejhelmecki/Desktop/LearningSet';
+if ~isfolder(folder)
     errorMessage = sprintf('Error: The following folder does not exist:\n%s', myFolder);
     uiwait(warndlg(errorMessage));
     return;
 end
-filePattern = fullfile(myFolder, '*.jpg');
+filePattern = fullfile(folder, '*.jpg');
 jpegFiles = dir(filePattern);
-for k = 1:length(jpegFiles)
-    baseFileName = jpegFiles(k).name;
-    fullFileName = fullfile(myFolder, baseFileName);
+for index = 1:length(jpegFiles)
+    baseFileName = jpegFiles(index).name;
+    fullFileName = fullfile(folder, baseFileName);
     fprintf(1, 'Now reading %s\n', fullFileName);
  
     image = get_image(fullFileName);
@@ -70,25 +71,25 @@ function updated_neurons = ucz_siec(features, neurons, zapamietajIndexyCech)
         for i = 1:length(neurons)
             neuron = neurons(i);
 
-            euklidesLini = get_euklides_value(feature.theta, neuron.wagaNachylenia, feature.distance, neuron.wagaDlugosci, feature.lineGrayRate, neuron.wagaOstrosci);
+            euklidesLini = get_euklides_value(feature.slope, neuron.slopeWeight, feature.distance, neuron.distanceWeight, feature.clarity, neuron.clarityWeight);
             if euklidesLini < minEuklides
                minEuklides = euklidesLini;
                wonNeuronIndex = i;
             end
         end
         wonNeuron = neurons(wonNeuronIndex);
-        temp = struct('wagaNachylenia',feature.theta - wonNeuron.wagaNachylenia,'wagaDlugosci',feature.distance - wonNeuron.wagaDlugosci,'wagaOstrosci',feature.lineGrayRate - wonNeuron.wagaOstrosci);
-        miTemp = struct('wagaNachylenia',mi * temp.wagaNachylenia,'wagaDlugosci',mi * temp.wagaDlugosci,'wagaOstrosci',mi * temp.wagaOstrosci);
+        temp = struct('distanceWeight',feature.distance - wonNeuron.distanceWeight,'slopeWeight',feature.slope - wonNeuron.slopeWeight,'clarityWeight',feature.clarity - wonNeuron.clarityWeight);
+        miTemp = struct('distanceWeight',mi * temp.distanceWeight,'slopeWeight',mi * temp.slopeWeight,'clarityWeight',mi * temp.clarityWeight);
        
         if zapamietajIndexyCech
-            test = wonNeuron.indexyCech;
+            test = wonNeuron.arrayOfLineIndex;
             testLength = length(test);
             test(testLength + 1) = k;
         else 
             test = [];
         end
         
-        updatedNeuron = struct('wagaNachylenia',wonNeuron.wagaNachylenia + miTemp.wagaNachylenia,'wagaDlugosci',wonNeuron.wagaDlugosci + miTemp.wagaDlugosci,'wagaOstrosci',wonNeuron.wagaOstrosci + miTemp.wagaOstrosci,'indexyCech',test);
+        updatedNeuron = struct('distanceWeight',wonNeuron.distanceWeight + miTemp.distanceWeight,'slopeWeight',wonNeuron.slopeWeight + miTemp.slopeWeight,'clarityWeight',wonNeuron.clarityWeight + miTemp.clarityWeight,'arrayOfLineIndex',test);
         neurons(wonNeuronIndex) = updatedNeuron;
                 
         updated_neurons = neurons;
@@ -108,11 +109,11 @@ function feature = get_feature(line, image)
 
     startPoint = struct('x',x_start,'y',y_start);
     endPoint = struct('x',x_end,'y',y_end);
-    theta = abs((atan2(y_end - y_start, x_end - x_start)) * 180 / pi);
+    slope = abs((atan2(y_end - y_start, x_end - x_start)) * 180 / pi);
     distance = sqrt((x_end - x_start)^2 + (y_end - y_start)^2);
-    lineGrayRate = get_average_gray_rate(x_start, y_start, x_end, y_end, image);
+    clarity = get_average_gray_rate(x_start, y_start, x_end, y_end, image);
     
-    feature = struct('startPoint',startPoint,'endPoint',endPoint,'theta',theta,'distance',distance,'lineGrayRate',lineGrayRate);
+    feature = struct('startPoint',startPoint,'endPoint',endPoint,'distance',distance,'slope',slope,'clarity',clarity);
 end
 
 function averageGrayRate = get_average_gray_rate(x_start, y_start, x_end, y_end, image)
