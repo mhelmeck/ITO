@@ -60,7 +60,7 @@ imageFeatures = get_features(rgbImage);
 updatedNeurons = train_network(imageFeatures, neurons, true);
 neurons = updatedNeurons;
 
-draw(rgbImage, neurons(8).arrayOfLineIndex)
+draw(rgbImage, neurons)
 
 % MARK: - Functions
 function image = get_rgb_image(name) 
@@ -209,23 +209,30 @@ function pointBetween = get_points(x_start, y_start, x_end, y_end)
     end
 end
 
-function draw(myImageRGB, arrayOfLineIndex)
-    myImageGray = rgb2gray(myImageRGB);
-    BW = edge(myImageGray,'prewitt', 0.11);
+function draw(myImageRGB, neurons)
+    for k = 1:length(neurons)
+        neuron = neurons(k)
 
-    [H,T,R] = hough(BW);
+        myImageGray = rgb2gray(myImageRGB);
+        BW = edge(myImageGray,'prewitt', 0.11);
 
-    P = houghpeaks(H,50,'threshold',ceil(0.1*max(H(:))));
-    lines = houghlines(BW,T,R,P,'FillGap',30,'MinLength',10);
-    
-    figure, imshow(BW), hold on
-    for k = 1:length(lines)
-        xy = [lines(k).point1; lines(k).point2];
-        
-        if ismember(k, arrayOfLineIndex)
-            plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','red');
-        else
-            plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','blue');
+        [H,T,R] = hough(BW);
+
+        P = houghpeaks(H,50,'threshold',ceil(0.1*max(H(:))));
+        lines = houghlines(BW,T,R,P,'FillGap',30,'MinLength',10);
+
+        subplot(2,4,k);
+        imshow(BW);
+        title(['Neuron  ',num2str(k)])
+        hold on
+        for k = 1:length(lines)
+            xy = [lines(k).point1; lines(k).point2];
+
+            if ismember(k, neuron.arrayOfLineIndex)
+                plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','red');
+            else
+                plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','blue');
+            end
         end
     end
 end
