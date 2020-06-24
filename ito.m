@@ -10,41 +10,33 @@ neuron5 = struct('wagaNachylenia',55.0,'wagaDlugosci',510,'wagaOstrosci',110,'in
 neuron6 = struct('wagaNachylenia',56.0,'wagaDlugosci',520,'wagaOstrosci',120,'indexyCech',[]);
 neuron7 = struct('wagaNachylenia',57.0,'wagaDlugosci',530,'wagaOstrosci',130,'indexyCech',[]);
 neuron8 = struct('wagaNachylenia',58.0,'wagaDlugosci',540,'wagaOstrosci',140,'indexyCech',[]);
-% neuron1 = struct('wagaNachylenia',89.0,'wagaDlugosci',48,'wagaOstrosci',0.2,'indexyCech',[]);
-% neuron2 = struct('wagaNachylenia',19.0,'wagaDlugosci',39,'wagaOstrosci',0.1,'indexyCech',[]);
-% neuron3 = struct('wagaNachylenia',13.0,'wagaDlugosci',146,'wagaOstrosci',0.1,'indexyCech',[]);
-% neuron4 = struct('wagaNachylenia',19.0,'wagaDlugosci',552,'wagaOstrosci',0.08,'indexyCech',[]);
-% neuron5 = struct('wagaNachylenia',19.0,'wagaDlugosci',301,'wagaOstrosci',0.05,'indexyCech',[]);
-% neuron6 = struct('wagaNachylenia',33.0,'wagaDlugosci',874,'wagaOstrosci',0.07,'indexyCech',[]);
-% neuron7 = struct('wagaNachylenia',6.0,'wagaDlugosci',1394,'wagaOstrosci',0.08,'indexyCech',[]);
-% neuron8 = struct('wagaNachylenia',7.0,'wagaDlugosci',439,'wagaOstrosci',0.09,'indexyCech',[]);
 neurons = [neuron1, neuron2, neuron3, neuron4, neuron5, neuron6, neuron7, neuron8];
 
-% myFolder = '/Users/maciejhelmecki/Desktop/LearningSet';
-% if ~isdir(myFolder)
-%     errorMessage = sprintf('Error: The following folder does not exist:\n%s', myFolder);
-%     uiwait(warndlg(errorMessage));
-%     return;
-% end
-% filePattern = fullfile(myFolder, '*.jpg');
-% jpegFiles = dir(filePattern);
-% for k = 1:length(jpegFiles)
-%     baseFileName = jpegFiles(k).name;
-%     fullFileName = fullfile(myFolder, baseFileName);
-%     fprintf(1, 'Now reading %s\n', fullFileName);
-%  
-%     image = get_image(fullFileName);
-%     feature = get_features(image);
-%     result = ucz_siec(feature, neurons, false);
-%     neurons = result;
-% end
+myFolder = '/Users/maciejhelmecki/Desktop/LearningSet';
+if ~isfolder(myFolder)
+    errorMessage = sprintf('Error: The following folder does not exist:\n%s', myFolder);
+    uiwait(warndlg(errorMessage));
+    return;
+end
+filePattern = fullfile(myFolder, '*.jpg');
+jpegFiles = dir(filePattern);
+for k = 1:length(jpegFiles)
+    baseFileName = jpegFiles(k).name;
+    fullFileName = fullfile(myFolder, baseFileName);
+    fprintf(1, 'Now reading %s\n', fullFileName);
+ 
+    image = get_image(fullFileName);
+    feature = get_features(image);
+    result = ucz_siec(feature, neurons, false);
+    neurons = result;
+end
 
-image = get_image('/Users/maciejhelmecki/Desktop/ITO_example_33.jpg');
+image = get_image('/Users/maciejhelmecki/Desktop/ITO_example_24.jpg');
 feature = get_features(image);
 result = ucz_siec(feature, neurons, true);
 neurons = result;
 
-% draw(myImageRGB_4)
+draw(image, neurons(2).indexyCech)
 
 % MARK: - Functions
 function image = get_image(name) 
@@ -120,7 +112,7 @@ function feature = get_feature(line, image)
     distance = sqrt((x_end - x_start)^2 + (y_end - y_start)^2);
     lineGrayRate = get_average_gray_rate(x_start, y_start, x_end, y_end, image);
     
-    feature = struct('startPoint',startPoint,'endPoint',endPoint,'theta',theta,'distance',distance,'lineGrayRate',lineGrayRate, 'class', 0);
+    feature = struct('startPoint',startPoint,'endPoint',endPoint,'theta',theta,'distance',distance,'lineGrayRate',lineGrayRate);
 end
 
 function averageGrayRate = get_average_gray_rate(x_start, y_start, x_end, y_end, image)
@@ -137,7 +129,6 @@ function averageGrayRate = get_average_gray_rate(x_start, y_start, x_end, y_end,
         end
     end
     summedPointsGrayRate = sum(pointsGrayRate);
-    disp(summedPointsGrayRate)
     averageGrayRate = summedPointsGrayRate / length(points_between);
 end
 
@@ -194,7 +185,7 @@ function points_between = get_points(x_start, y_start, x_end, y_end)
     end
 end
 
-function draw(myImageRGB)
+function draw(myImageRGB, indexyCech)
     myImageGray = rgb2gray(myImageRGB);
     BW = edge(myImageGray,'prewitt', 0.11);
 
@@ -207,12 +198,19 @@ function draw(myImageRGB)
     figure, imshow(BW), hold on
     max_len = 0;
     for k = 1:length(lines)
-       xy = [lines(k).point1; lines(k).point2];
-       plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','red');
-
-       % Plot beginnings and ends of lines
-       plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','red');
-       plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
+        xy = [lines(k).point1; lines(k).point2];
+        
+        
+        % Plot beginnings and ends of lines
+        if ismember(k, indexyCech)
+%             plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','red');
+%             plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
+            plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','red');
+        else
+            plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','blue');
+%             plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','blue');
+%             plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','blue');
+        end
 
        % Determine the endpoints of the longest line segment
        len = norm(lines(k).point1 - lines(k).point2);
