@@ -26,21 +26,21 @@ for index = 1:length(jpegFiles)
     fullFileName = fullfile(folder, baseFileName);
     fprintf(1, 'Now reading %s\n', fullFileName);
  
-    image = get_image(fullFileName);
-    feature = get_features(image);
-    result = ucz_siec(feature, neurons, false);
-    neurons = result;
+    rgbImage = get_rgb_image(fullFileName);
+    imageFeatures = get_features(rgbImage);
+    updatedNeurons = train_network(imageFeatures, neurons, false);
+    neurons = updatedNeurons;
 end
 
-image = get_image('/Users/maciejhelmecki/Desktop/ITO_example_24.jpg');
-feature = get_features(image);
-result = ucz_siec(feature, neurons, true);
-neurons = result;
+rgbImage = get_rgb_image('/Users/maciejhelmecki/Desktop/ITO_example_24.jpg');
+imageFeatures = get_features(rgbImage);
+updatedNeurons = train_network(imageFeatures, neurons, true);
+neurons = updatedNeurons;
 
-draw(image, neurons(2).indexyCech)
+draw(rgbImage, neurons(2).arrayOfLineIndex)
 
 % MARK: - Functions
-function image = get_image(name) 
+function image = get_rgb_image(name) 
     myImageRGB = imread(name);
     image = imresize(myImageRGB,[1200, 1920]);
 end
@@ -61,7 +61,7 @@ function features = get_features(myImageRGB)
     features = temp;
 end
 
-function updated_neurons = ucz_siec(features, neurons, zapamietajIndexyCech)
+function updatedNeurons = train_network(features, neurons, zapamietajIndexyCech)
     mi = 0.3;
     for k = 1:length(features)
         feature = features(k);
@@ -92,7 +92,7 @@ function updated_neurons = ucz_siec(features, neurons, zapamietajIndexyCech)
         updatedNeuron = struct('distanceWeight',wonNeuron.distanceWeight + miTemp.distanceWeight,'slopeWeight',wonNeuron.slopeWeight + miTemp.slopeWeight,'clarityWeight',wonNeuron.clarityWeight + miTemp.clarityWeight,'arrayOfLineIndex',test);
         neurons(wonNeuronIndex) = updatedNeuron;
                 
-        updated_neurons = neurons;
+        updatedNeurons = neurons;
     end
 end
 
@@ -186,7 +186,7 @@ function points_between = get_points(x_start, y_start, x_end, y_end)
     end
 end
 
-function draw(myImageRGB, indexyCech)
+function draw(myImageRGB, arrayOfLineIndex)
     myImageGray = rgb2gray(myImageRGB);
     BW = edge(myImageGray,'prewitt', 0.11);
 
@@ -203,7 +203,7 @@ function draw(myImageRGB, indexyCech)
         
         
         % Plot beginnings and ends of lines
-        if ismember(k, indexyCech)
+        if ismember(k, arrayOfLineIndex)
 %             plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','red');
 %             plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
             plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','red');
